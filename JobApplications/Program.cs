@@ -34,24 +34,32 @@ namespace JobApplications
             {
                 case ConsoleKey.A:
 
-                    Console.WriteLine("\bEnter Company and Job Title: ");
+                    Console.WriteLine("\bEnter Company, Job title, and Job identifier: ");
 
                     var c = Console.ReadLine();
                     string[] input = c.Split("-");
+                    if (string.IsNullOrEmpty(input[2]))
+                    {
+                        input[2] = "N/A";
+                    }
 
                     Console.WriteLine("Enter Date Applied (Date does not need to be added if applied today): ");
                     var d = Console.ReadLine();
 
-                    var newjob = input[0] + input[1] + d;
+                    
+                    var newjob = input[0] + input[1] + input[2] + d ;
                     if (!string.IsNullOrEmpty(newjob))
                     {
                         if (String.IsNullOrEmpty(d))
                         {
                             d = date;
                         }
-                        newjob = input[0] + " - " + input[1] + ", " + d;
+                        newjob = input[0].Trim() + " - " + input[1].Trim() + ", " + input[2].Trim() + ", " + d + "\n";
                         File.AppendAllText(@"C:\Users\LuisA\OneDrive\Documents\Jobs.txt", newjob);
                     }
+                    Console.WriteLine();
+                    Console.WriteLine(File.ReadAllText(path));
+                    Console.ReadKey();
                     Choices(date, path);
                     break;
                 case ConsoleKey.V:
@@ -76,7 +84,7 @@ namespace JobApplications
             // Read the file and display it line by line.  
             StreamReader file =
                 new StreamReader(@"C:\Users\LuisA\OneDrive\Documents\Jobs.txt");
-            var l = new List<KeyValuePair<string, (string, string)>>();
+            var l = new List<KeyValuePair<string, (string, string, string)>>();
 
             while ((job = file.ReadLine()) != null)
             {
@@ -84,8 +92,11 @@ namespace JobApplications
                 word = job.Split(new string[] { "-", "," }, StringSplitOptions.None);
 
                 // string val = word[1].Trim();
-
-                l.Add(new KeyValuePair<string, (string, string)>(word[0].Trim(), (word[1].Trim(), word[2].Trim())));
+                if (String.IsNullOrEmpty(word[2]))
+                {
+                    word[2] = "N/A";
+                }
+                l.Add(new KeyValuePair<string, (string, string, string)>(word[0].Trim(), (word[1].Trim(), word[2].Trim(), word[3].Trim())));
                 counter++;
             }
             file.Close();
@@ -117,14 +128,14 @@ namespace JobApplications
             
         }
 
-        private static void OrderByCompany(string path, int counter, StreamReader file, List<KeyValuePair<string, (string, string)>> l, List<string> lines)
+        private static void OrderByCompany(string path, int counter, StreamReader file, List<KeyValuePair<string, (string, string, string)>> l, List<string> lines)
         {
-            List<KeyValuePair<string, (string, string)>> orderedlist = l.OrderBy(x => x.Key).ThenBy(x => x.Value.Item1).ToList();
+            List<KeyValuePair<string, (string, string, string)>> orderedlist = l.OrderBy(x => x.Key).ThenBy(x => x.Value.Item1).ToList();
 
-            foreach (KeyValuePair<string, (string, string)> i in orderedlist)
+            foreach (KeyValuePair<string, (string, string, string)> i in orderedlist)
             {
                 //string key = orderedlist.Where(x => x.Value.Item1 == i.Value.Item1).Select(x => x.Key).FirstOrDefault();
-                string line = i.Key + " - " + i.Value.Item1 + ", " + i.Value.Item2;
+                string line = i.Key + " - " + i.Value.Item1 + ", " + i.Value.Item2 + ", " + i.Value.Item3;
                 lines.Add(line);
             }
 
@@ -135,14 +146,14 @@ namespace JobApplications
             file.Close();
             Console.WriteLine("There were {0} lines.", counter);
         }
-        private static void OrderByTitle(string path, int counter, StreamReader file, List<KeyValuePair<string, (string, string)>> l, List<string> lines)
+        private static void OrderByTitle(string path, int counter, StreamReader file, List<KeyValuePair<string, (string, string, string)>> l, List<string> lines)
         {
-            List<KeyValuePair<string, (string, string)>> orderedlist = l.OrderBy(x => x.Value.Item1).ThenBy(x => x.Key).ToList();
+            List<KeyValuePair<string, (string, string, string)>> orderedlist = l.OrderBy(x => x.Value.Item1).ThenBy(x => x.Key).ToList();
 
-            foreach (KeyValuePair<string, (string, string)> i in orderedlist)
+            foreach (KeyValuePair<string, (string, string, string)> i in orderedlist)
             {
                 //string key = orderedlist.Where(x => x.Value.Item1 == i.Value.Item1).Select(x => x.Key).FirstOrDefault();
-                string line = i.Key + " - " + i.Value.Item1 + ", " + i.Value.Item2;
+                string line = i.Key + " - " + i.Value.Item1 + ", " + i.Value.Item2 + ", " + i.Value.Item3;
                 lines.Add(line);
             }
 
@@ -152,14 +163,14 @@ namespace JobApplications
 
             file.Close();
             Console.WriteLine("There were {0} lines.", counter);
-        } private static void OrderByDate(string path, int counter, StreamReader file, List<KeyValuePair<string, (string, string)>> l, List<string> lines)
+        } private static void OrderByDate(string path, int counter, StreamReader file, List<KeyValuePair<string, (string, string, string)>> l, List<string> lines)
         {
-            List<KeyValuePair<string, (string, string)>> orderedlist = l.OrderBy(x => DateTime.Parse(x.Value.Item2)).ThenBy(x => x.Key).ThenBy(x => x.Value.Item1).ToList();
+            List<KeyValuePair<string, (string, string, string)>> orderedlist = l.OrderBy(x => DateTime.Parse(x.Value.Item2)).ThenBy(x => x.Key).ThenBy(x => x.Value.Item1).ToList();
 
-            foreach (KeyValuePair<string, (string, string)> i in orderedlist)
+            foreach (KeyValuePair<string, (string, string, string)> i in orderedlist)
             {
                 //string key = orderedlist.Where(x => x.Value.Item1 == i.Value.Item1).Select(x => x.Key).FirstOrDefault();
-                string line = i.Key + " - " + i.Value.Item1 + ", " + i.Value.Item2;
+                string line = i.Key + " - " + i.Value.Item1 + ", " + i.Value.Item2 + ", " + i.Value.Item3;
                 lines.Add(line);
             }
 
