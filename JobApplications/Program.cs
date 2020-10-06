@@ -72,13 +72,16 @@ namespace JobApplications
 
         private static void ListOfJobs(string path)
         {
+            try
+            {
+
             var word = new string[] { };
 
             string date = DateTime.Now.ToString("d");
             // Keep the console window open in debug mode.
             int counter = 0;
             string job;
-            Console.WriteLine("\bLate time file was opened was " + File.GetLastAccessTime(path));
+            Console.WriteLine("\bLast time file was opened was " + File.GetLastAccessTime(path));
             Console.Write("\nWould you like list ordered by Company, Title, or Date? (c / t / d) ");
             var choice2 = Char.Parse(Console.ReadLine());
             // Read the file and display it line by line.  
@@ -126,6 +129,16 @@ namespace JobApplications
                 Choices(date, path);
             }
             
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Invalid input, error is: {e}");
+
+                Console.Read();
+                Console.Clear();
+                ListOfJobs(path);
+            }
+
         }
 
         private static void OrderByCompany(string path, int counter, StreamReader file, List<KeyValuePair<string, (string, string, string)>> l, List<string> lines)
